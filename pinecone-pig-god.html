@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>O LORD, PLEASE~~</title>
+</head>
+<body>
+
+<label for="dafile">Select file:</label><br>
+<input type="file" id="dafile"><br><br>
+
+<label for="modifier">HP modifier</label><br>
+<input type="number" id="modifier" value="100">%<br><br>
+
+<button id="generate">Generate JSON</button><br><br>
+
+<a id="downloadAnchorElem" style="display:none"></a>
+
+
+
+<script>
+document.getElementById('generate').addEventListener('click', function(e){
+	var dafile = document.getElementById('dafile').files[0];
+	if( dafile && dafile.type === 'application/json' ) {
+		var modHP = document.getElementById('modifier').value / 100;
+		var reader = new FileReader();
+		reader.readAsText(dafile);
+		reader.onload = function() {
+			var jsonA = JSON.parse(reader.result);
+			for (var i = 0, len = jsonA.length; i < len; i++) {
+				if( i > 0 ) {
+					var oldHP = jsonA[i].params[0];
+					var newHP = Math.ceil( ( oldHP * modHP ) );
+					jsonA[i].params[0] = newHP;
+				}
+			}
+
+			var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonA));
+			var dlAnchorElem = document.getElementById('downloadAnchorElem');
+			dlAnchorElem.setAttribute("href", dataStr );
+			dlAnchorElem.setAttribute("download", "Enemies.json");
+			dlAnchorElem.click();
+		};
+	} else {
+		alert('Please select a Enemies.json file from your game.');
+	}
+});
+</script>
+	
+</body>
+</html>
